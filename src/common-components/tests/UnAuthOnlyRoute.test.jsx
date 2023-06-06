@@ -8,7 +8,9 @@ import { mount } from 'enzyme';
 import { UnAuthOnlyRoute } from '..';
 import { LOGIN_PAGE } from '../../data/constants';
 
-import { MemoryRouter, BrowserRouter as Router, Switch } from 'react-router-dom';
+import {
+  MemoryRouter, Route, BrowserRouter as Router, Routes,
+} from 'react-router-dom';
 
 jest.mock('@edx/frontend-platform/auth', () => ({
   getAuthenticatedUser: jest.fn(),
@@ -24,9 +26,9 @@ module.exports = RRD;
 const TestApp = () => (
   <Router>
     <div>
-      <Switch>
-        <UnAuthOnlyRoute path={LOGIN_PAGE} render={() => (<span>Login Page</span>)} />
-      </Switch>
+      <Routes>
+        <Route path={LOGIN_PAGE} element={<UnAuthOnlyRoute><span>Login Page</span></UnAuthOnlyRoute>} />
+      </Routes>
     </div>
   </Router>
 );

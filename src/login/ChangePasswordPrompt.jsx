@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -31,9 +31,12 @@ const ChangePasswordPrompt = ({ variant, redirectUrl }) => {
   const { formatMessage } = useIntl();
   const navigate = useNavigate();
 
-  if (redirectToResetPasswordPage) {
-    navigate(updatePathWithQueryParams(RESET_PAGE));
-  }
+  useEffect(() => {
+    if (redirectToResetPasswordPage) {
+      navigate(updatePathWithQueryParams(RESET_PAGE));
+    }
+  }, [redirectToResetPasswordPage, navigate]);
+
   return (
     <ModalDialog
       title="Password security"

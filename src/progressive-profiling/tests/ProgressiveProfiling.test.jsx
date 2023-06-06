@@ -8,7 +8,7 @@ import { configure, injectIntl, IntlProvider } from '@edx/frontend-platform/i18n
 import { mount } from 'enzyme';
 import { createMemoryHistory } from 'history';
 import { act } from 'react-dom/test-utils';
-import { MemoryRouter, Router } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 
 import {
@@ -71,11 +71,7 @@ describe('ProgressiveProfilingTests', () => {
   );
 
   const getProgressiveProfilingPage = async () => {
-    const progressiveProfilingPage = mount(reduxWrapper(
-      <Router history={history}>
-        <IntlProgressiveProfilingPage {...props} />
-      </Router>,
-    ));
+    const progressiveProfilingPage = mount(reduxWrapper(<IntlProgressiveProfilingPage {...props} />));
     await act(async () => {
       await Promise.resolve(progressiveProfilingPage);
       await new Promise(resolve => { setImmediate(resolve); });
