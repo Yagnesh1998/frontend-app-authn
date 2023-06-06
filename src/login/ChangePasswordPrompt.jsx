@@ -7,7 +7,7 @@ import {
 } from '@edx/paragon';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import messages from './messages';
 import { DEFAULT_REDIRECT_URL, RESET_PAGE } from '../data/constants';
@@ -29,9 +29,10 @@ const ChangePasswordPrompt = ({ variant, redirectUrl }) => {
   // eslint-disable-next-line no-unused-vars
   const [isOpen, open, close] = useToggle(true, handlers);
   const { formatMessage } = useIntl();
+  const navigate = useNavigate();
 
   if (redirectToResetPasswordPage) {
-    return <Redirect to={updatePathWithQueryParams(RESET_PAGE)} />;
+    navigate(updatePathWithQueryParams(RESET_PAGE));
   }
   return (
     <ModalDialog

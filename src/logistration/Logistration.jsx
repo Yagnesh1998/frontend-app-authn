@@ -12,7 +12,7 @@ import {
 } from '@edx/paragon';
 import { ChevronLeft } from '@edx/paragon/icons';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { BaseComponent } from '../base-component';
 import { clearThirdPartyAuthContextErrorMessage } from '../common-components/data/actions';
@@ -34,7 +34,7 @@ const Logistration = (props) => {
   } = tpaProviders;
   const { formatMessage } = useIntl();
   const [institutionLogin, setInstitutionLogin] = useState(false);
-  const [key, setKey] = useState('');
+  const navigate = useNavigate();
   const disablePublicAccountCreation = getConfig().ALLOW_PUBLIC_ACCOUNT_CREATION === false;
 
   useEffect(() => {
@@ -43,6 +43,12 @@ const Logistration = (props) => {
       authService.getCsrfTokenService().getCsrfToken(getConfig().LMS_BASE_URL);
     }
   });
+
+  useEffect(() => {
+    if (disablePublicAccountCreation) {
+      navigate(updatePathWithQueryParams(LOGIN_PAGE));
+    }
+  }, [navigate, disablePublicAccountCreation]);
 
   const handleInstitutionLogin = (e) => {
     sendTrackEvent('edx.bi.institution_login_form.toggled', { category: 'user-engagement' });
@@ -61,7 +67,7 @@ const Logistration = (props) => {
     if (tabKey === LOGIN_PAGE) {
       props.backupRegistrationForm();
     }
-    setKey(tabKey);
+    navigate(updatePathWithQueryParams(tabKey));
   };
 
   const tabTitle = (
@@ -86,7 +92,6 @@ const Logistration = (props) => {
         {disablePublicAccountCreation
           ? (
             <>
-              <Redirect to={updatePathWithQueryParams(LOGIN_PAGE)} />
               {institutionLogin && (
                 <Tabs defaultActiveKey="" id="controlled-tab" onSelect={handleInstitutionLogin}>
                   <Tab title={tabTitle} eventKey={LOGIN_PAGE} />
@@ -114,9 +119,6 @@ const Logistration = (props) => {
                     <Tab title={formatMessage(messages['logistration.sign.in'])} eventKey={LOGIN_PAGE} />
                   </Tabs>
                 ))}
-              { key && (
-                <Redirect to={updatePathWithQueryParams(key)} />
-              )}
               <div id="main-content" className="main-content">
                 {selectedPage === LOGIN_PAGE
                   ? <LoginPage institutionLogin={institutionLogin} handleInstitutionLogin={handleInstitutionLogin} />

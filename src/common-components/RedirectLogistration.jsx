@@ -1,8 +1,6 @@
-import React from 'react';
-
 import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { AUTHN_PROGRESSIVE_PROFILING, RECOMMENDATIONS } from '../data/constants';
 import { setCookie } from '../data/utils';
@@ -19,6 +17,7 @@ const RedirectLogistration = (props) => {
     userId,
   } = props;
   let finalRedirectUrl = '';
+  const navigate = useNavigate();
 
   if (success) {
     // If we're in a third party auth pipeline, we must complete the pipeline
@@ -36,32 +35,24 @@ const RedirectLogistration = (props) => {
       // TODO: Do we still need this cookie?
       setCookie('van-504-returning-user', true);
       const registrationResult = { redirectUrl: finalRedirectUrl, success };
-      return (
-        <Redirect to={{
-          pathname: AUTHN_PROGRESSIVE_PROFILING,
-          state: {
-            registrationResult,
-            optionalFields,
-          },
-        }}
-        />
-      );
+      navigate(AUTHN_PROGRESSIVE_PROFILING, {
+        state: {
+          registrationResult,
+          optionalFields,
+        },
+      });
     }
 
     // Redirect to Recommendation page
     if (redirectToRecommendationsPage) {
       const registrationResult = { redirectUrl: finalRedirectUrl, success };
-      return (
-        <Redirect to={{
-          pathname: RECOMMENDATIONS,
-          state: {
-            registrationResult,
-            educationLevel,
-            userId,
-          },
-        }}
-        />
-      );
+      navigate(RECOMMENDATIONS, {
+        state: {
+          registrationResult,
+          educationLevel,
+          userId,
+        },
+      });
     }
 
     window.location.href = finalRedirectUrl;

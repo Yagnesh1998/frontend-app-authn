@@ -3,7 +3,7 @@ import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { Helmet } from 'react-helmet';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import {
   NotFoundPage, registerIcons, UnAuthOnlyRoute, Zendesk,
@@ -34,21 +34,22 @@ const MainApp = () => (
       <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
     </Helmet>
     {getConfig().ZENDESK_KEY && <Zendesk />}
-    <Switch>
-      <Route exact path="/">
-        <Redirect to={updatePathWithQueryParams(REGISTER_PAGE)} />
-      </Route>
-      <UnAuthOnlyRoute exact path={LOGIN_PAGE} render={() => <Logistration selectedPage={LOGIN_PAGE} />} />
-      <UnAuthOnlyRoute exact path={REGISTER_PAGE} component={Logistration} />
-      <UnAuthOnlyRoute exact path={RESET_PAGE} component={ForgotPasswordPage} />
-      <Route exact path={PASSWORD_RESET_CONFIRM} component={ResetPasswordPage} />
-      <Route exact path={AUTHN_PROGRESSIVE_PROFILING} component={ProgressiveProfiling} />
-      <Route exact path={RECOMMENDATIONS} component={RecommendationsPage} />
-      <Route path={PAGE_NOT_FOUND} component={NotFoundPage} />
-      <Route path="*">
-        <Redirect to={PAGE_NOT_FOUND} />
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Navigate replace to={updatePathWithQueryParams(REGISTER_PAGE)} />} />
+      <Route
+        path={LOGIN_PAGE}
+        element={
+          <UnAuthOnlyRoute><Logistration selectedPage={LOGIN_PAGE} /></UnAuthOnlyRoute>
+        }
+      />
+      <Route path={REGISTER_PAGE} element={<UnAuthOnlyRoute><Logistration /></UnAuthOnlyRoute>} />
+      <Route path={RESET_PAGE} element={<UnAuthOnlyRoute><ForgotPasswordPage /></UnAuthOnlyRoute>} />
+      <Route path={PASSWORD_RESET_CONFIRM} element={<ResetPasswordPage />} />
+      <Route path={AUTHN_PROGRESSIVE_PROFILING} element={<ProgressiveProfiling />} />
+      <Route path={RECOMMENDATIONS} element={<RecommendationsPage />} />
+      <Route path={PAGE_NOT_FOUND} element={<NotFoundPage />} />
+      <Route path="*" element={<Navigate replace to={PAGE_NOT_FOUND} />} />
+    </Routes>
   </AppProvider>
 );
 
