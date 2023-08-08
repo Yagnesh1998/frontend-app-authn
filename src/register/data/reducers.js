@@ -12,7 +12,7 @@ import {
 } from '../../data/constants';
 
 export const defaultState = {
-  backendCountryCode: '',
+  backendCountryCode: 'PK',
   registrationError: {},
   registrationResult: {},
   registrationFormData: {

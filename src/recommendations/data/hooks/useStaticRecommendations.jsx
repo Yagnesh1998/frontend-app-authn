@@ -4,12 +4,16 @@ import { getConfig } from '@edx/frontend-platform';
 
 import { filterLocationRestriction } from '../utils';
 
-export default function useProducts(countryCode) {
+export default function useStaticRecommendations(countryCode, shouldFetch) {
   const [isLoading, setLoading] = useState(true);
   const [popularProducts, setPopularProducts] = useState([]);
   const [trendingProducts, setTrendingProducts] = useState([]);
 
   useEffect(() => {
+    if (!shouldFetch) {
+      return;
+    }
+
     const popular = filterLocationRestriction(JSON.parse(getConfig().POPULAR_PRODUCTS), countryCode);
     const trending = filterLocationRestriction(JSON.parse(getConfig().TRENDING_PRODUCTS), countryCode);
 
