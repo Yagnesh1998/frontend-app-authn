@@ -9,7 +9,6 @@ import {
   getCountryList, getLocale, useIntl,
 } from '@edx/frontend-platform/i18n';
 import { Form, Spinner, StatefulButton } from '@edx/paragon';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import Skeleton from 'react-loading-skeleton';
@@ -51,7 +50,7 @@ import {
   INVALID_NAME_REGEX, LETTER_REGEX, NUMBER_REGEX, PENDING_STATE, REGISTER_PAGE, VALID_EMAIL_REGEX,
 } from '../data/constants';
 import {
-  getAllPossibleQueryParams, getTpaHint, getTpaProvider, isHostAvailableInQueryParams, setCookie,
+  getAllPossibleQueryParams, getTpaHint, getTpaProvider, setCookie,
 } from '../data/utils';
 
 const emailRegex = new RegExp(VALID_EMAIL_REGEX, 'i');
@@ -87,8 +86,6 @@ const RegistrationPage = (props) => {
   const { formatMessage } = useIntl();
   const countryList = useMemo(() => getCountryList(getLocale()), []);
   const queryParams = useMemo(() => getAllPossibleQueryParams(), []);
-  const registrationEmbedded = isHostAvailableInQueryParams();
-  const { cta, host } = queryParams;
   const tpaHint = useMemo(() => getTpaHint(), []);
   const flags = {
     showConfigurableEdxFields: getConfig().SHOW_CONFIGURABLE_EDX_FIELDS,
@@ -109,7 +106,7 @@ const RegistrationPage = (props) => {
     providers, currentProvider, secondaryProviders, finishAuthUrl,
   } = thirdPartyAuthContext;
   const platformName = getConfig().SITE_NAME;
-  const buttonLabel = cta ? formatMessage(messages['create.account.cta.button'], { label: cta }) : formatMessage(messages['create.account.for.free.button']);
+  const buttonLabel = formatMessage(messages['create.account.for.free.button']);
 
   /**
    * If auto submitting register form, we will check tos and honor code fields if they exist for feature parity.
@@ -424,17 +421,15 @@ const RegistrationPage = (props) => {
 
   const handleOnBlur = (event) => {
     const { name, value } = event.target;
-    if (registrationEmbedded) {
-      if (name === 'name') {
-        validateInput(
-          name,
-          value,
-          { name: formFields.name, username: formFields.username, form_field_key: name },
-          !validationApiRateLimited,
-          false,
-        );
-      }
-      return;
+
+    if (name === 'name') {
+      validateInput(
+        name,
+        value,
+        { name: formFields.name, username: formFields.username, form_field_key: name },
+        !validationApiRateLimited,
+        false,
+      );
     }
     const payload = {
       name: formFields.name,
@@ -540,12 +535,10 @@ const RegistrationPage = (props) => {
           <title>{formatMessage(messages['register.page.title'], { siteName: getConfig().SITE_NAME })}</title>
         </Helmet>
         <RedirectLogistration
-          host={host}
           success={registrationResult.success}
           redirectUrl={registrationResult.redirectUrl}
           finishAuthUrl={finishAuthUrl}
           optionalFields={optionalFields}
-          registrationEmbedded={registrationEmbedded}
           redirectToProgressiveProfilingPage={
             getConfig().ENABLE_PROGRESSIVE_PROFILING_ON_AUTHN && Object.keys(optionalFields).includes('fields')
           }
@@ -556,10 +549,7 @@ const RegistrationPage = (props) => {
           </div>
         ) : (
           <div
-            className={classNames(
-              'mw-xs mt-3',
-              { 'w-100 m-auto pt-4 main-content': registrationEmbedded },
-            )}
+            className="mw-xs mt-3"
           >
             <ThirdPartyAuthAlert
               currentProvider={currentProvider}
@@ -624,7 +614,6 @@ const RegistrationPage = (props) => {
                 countryList={countryList}
                 email={formFields.email}
                 fieldErrors={errors}
-                registrationEmbedded={registrationEmbedded}
                 formFields={configurableFormFields}
                 setFieldErrors={setErrors}
                 setFormFields={setConfigurableFormFields}
@@ -645,15 +634,13 @@ const RegistrationPage = (props) => {
                 onClick={handleSubmit}
                 onMouseDown={(e) => e.preventDefault()}
               />
-              {!registrationEmbedded && (
-                <ThirdPartyAuth
-                  currentProvider={currentProvider}
-                  providers={providers}
-                  secondaryProviders={secondaryProviders}
-                  handleInstitutionLogin={handleInstitutionLogin}
-                  thirdPartyAuthApiStatus={thirdPartyAuthApiStatus}
-                />
-              )}
+              <ThirdPartyAuth
+                currentProvider={currentProvider}
+                providers={providers}
+                secondaryProviders={secondaryProviders}
+                handleInstitutionLogin={handleInstitutionLogin}
+                thirdPartyAuthApiStatus={thirdPartyAuthApiStatus}
+              />
             </Form>
           </div>
         )}
